@@ -18,10 +18,43 @@ onMounted(async () => {
 
 </script>
 <template>
-    <Header>SHOP</Header>
-    <div v-for="product in products" :key="product.product_id">
-        {{ product.ProductID}}
-        {{ product.Name }}
-        {{ product }}
+    <div id="products-grid">
+        <div class="product hand-font" v-for="product in products" :key="product.product_id">
+            <div class="product-img-div">
+                <img class="product-img" :alt="product.Name" :src="`https://res.cloudinary.com/dy6sxilvq/image/upload/v1725293732/cakes/${product.Image}.png`" />
+            </div>
+            {{ product.Name }}
+        </div>
     </div>
 </template>
+<style>
+#products-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 60vw;
+}
+
+.product-img{
+    object-fit: cover;
+    width: 15vw;
+    height: 11.25vw;
+}
+
+.product-img-div{
+    width: 15vw;
+    height: 11.25vw;
+    overflow: hidden;
+}
+
+.product:hover{
+    .product-img{
+        transform: scale(1.1);
+    }
+}
+
+.product{
+    margin: 1rem;
+    cursor: pointer;
+}
+
+</style>
