@@ -20,6 +20,7 @@
   --main-color:  rgba(225, 176, 236, 0.87);
   --accent-color: rgba(190, 68, 163, 0.87);
   --main-mono: rgb(234, 230, 239);
+  --main-mono-var: rgb(217, 206, 231);
   --accent-mono: rgb(89, 83, 92);
 
   overflow-y: scroll;
@@ -61,4 +62,29 @@ h1 {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+}
+
+input {
+  border: solid 2px var(--main-color);
+  border-radius: 0.5rem;
+  padding: 0.2rem;
+  margin: -0.2rem;
+  text-align: center;
+}
+
+input:hover {
+  border: solid 2px var(--accent-color)
+}
+
+.default-button{
+  background-color: var(--main-color);
+  padding: 0.2rem;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.default-button:hover{
+  border: 2px solid var(--accent-color);
 }

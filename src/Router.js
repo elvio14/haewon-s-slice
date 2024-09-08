@@ -27,29 +27,40 @@ const router = createRouter({
     routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
     console.log('before each')
     const token = localStorage.getItem('token')
+    if (token == null) {
+        throw new Error('token is null')
+    }
   
     if(to.meta.requiresAuth){
         if(token){
             try{
-                const isAdmin = fetch("http://localhost:8080/validate_admin", {
-                    method: 'GET'
+                const response = await fetch("http://localhost:8080/validate_admin", {
+                    method: 'GET',
+                    headers: {
+                        token: token
+                    }
                 })
-                console.log(isAdmin)
-                if(isAdmin){
+                if (!response.ok){
+                    throw new Error('response not ok')
+                }
+                const isAdmin = await response.json()
+                console.log(isAdmin.is_admin)
+                if(isAdmin.is_admin){
                     next()
                 }else{
-                     window.location.replace('/login')
+                    //  window.location.replace('/login')
+                     console.log('admin access only')
                 }
             }catch(err){
                 console.log(err)
-                 window.location.replace('/login')
+                //  window.location.replace('/login')
             }
         }else {
             console.log('token invalid')
-             window.location.replace('/login')
+            //  window.location.replace('/login')
         }
     }else{
         next()

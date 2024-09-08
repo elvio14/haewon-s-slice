@@ -4,6 +4,10 @@ import {ref} from 'vue'
 const user = ref('')
 const pass = ref('')
 
+const notAdmin = ref(false)
+
+const errMessage = ref()
+
 const login = async () =>{
     try {
         const response = await fetch("http://localhost:8080/login", {
@@ -13,14 +17,24 @@ const login = async () =>{
                 password: pass.value
             })
         })
-        
+
+        if(!response.ok){
+            const errorRes = await response.json()
+            errMessage.value = errorRes.message
+            throw new Error(errorRes.message)
+        }
         const data = await response.json()
         
         localStorage.setItem('token',data.token)
 
-        window.location.replace("/admin")
+        if(data.is_admin){
+            window.location.replace("/admin")
+        } else {
+            notAdmin.value = true
+        }
     } catch(err){
-        console.error(err)
+        console.error(err.message)
+        errMessage.value = err.message
     }
 }
 
@@ -31,7 +45,9 @@ const login = async () =>{
         <p>Please log in</p><br>
         <input v-model="user" placeholder="username" class="input"><br>
         <input v-model="pass" placeholder="password" class="input" type="password"><br>
-        <button @click="login()">Login</button>
+        <button @click="login()">Login</button><br>
+        <div v-if="notAdmin">You're not an admin.</div>
+        {{ errMessage }}
     </div>
 </template>
 <style scoped>

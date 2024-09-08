@@ -54,11 +54,9 @@ const styleBarButton = (bar) => {
     z-index: 1;
 }
 #bar{
-    position: fixed;
     height: 100%;
     background-color: var(--main-mono);
     margin: none;
-    width: 14vw;
 }
 
 .bar-button{
