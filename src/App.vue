@@ -3,6 +3,7 @@ import {ref} from 'vue'
 import HeaderVue from './components/HeaderVue.vue'
 import Shop from './components/Shop.vue'
 import Home from './components/Home.vue'
+import About from './components/About.vue'
 
 const activeTab = ref('home')
 
@@ -21,7 +22,7 @@ const setActive = (active) => {
     <HeaderVue @getActive="(active) => setActive(active)"/>
     <Home v-if="activeTab == 'home'"></Home>
     <Shop v-if="activeTab == 'shop'"></Shop>
-
+    <About v-if="activeTab == 'about'"></About>
   </div>
 </template>
 

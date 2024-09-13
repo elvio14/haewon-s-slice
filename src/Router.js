@@ -1,4 +1,4 @@
-import { createRouter,createWebHistory } from "vue-router";
+import { createRouter,createWebHistory } from "vue-router"
 import App from './App.vue'
 import Admin from './Admin.vue'
 import Login from './Login.vue'
@@ -28,13 +28,13 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-    console.log('before each')
-    const token = localStorage.getItem('token')
-    if (token == null) {
-        throw new Error('token is null')
-    }
   
     if(to.meta.requiresAuth){
+        console.log('before each')
+        const token = localStorage.getItem('token')
+        if (token == null) {
+            throw new Error('token is null')
+        }
         if(token){
             try{
                 const response = await fetch("http://localhost:8080/validate_admin", {

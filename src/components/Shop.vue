@@ -1,7 +1,10 @@
 <script setup>
-import {ref, onMounted} from 'vue'
+import {ref, onMounted, computed} from 'vue'
+import Product from './Product.vue';
 
+const currentProduct = ref({})
 const products = ref([])
+const showProduct = ref(false)
 
 onMounted(async () => {
     try {
@@ -11,21 +14,29 @@ onMounted(async () => {
         }
         const data = await response.json()
         products.value = data
+        currentProduct.value = data[0]
     } catch (error) {
         console.error('error fetching products', error)
     }
 })
 
+const handleProductClick = (product) => {
+    currentProduct.value = product
+    console.log(currentProduct.value)
+    showProduct.value = true
+}
+
 </script>
 <template>
-    <div id="products-grid">
-        <div class="product hand-font" v-for="product in products" :key="product.product_id">
+    <div id="products-grid" v-if="!showProduct">
+        <div class="product hand-font" v-for="product in products" :key="product.ProductID" @click="handleProductClick(product)">
             <div class="product-img-div">
                 <img class="product-img" :alt="product.Name" :src="`https://res.cloudinary.com/dy6sxilvq/image/upload/v1725293732/cakes/${product.Image}.png`" />
             </div>
             {{ product.Name }}
         </div>
     </div>
+    <Product :product="currentProduct" @back="(value) => showProduct = value" v-if="showProduct"/>
 </template>
 <style>
 #products-grid{
