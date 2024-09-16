@@ -4,6 +4,8 @@ import Product from './Product.vue';
 
 const currentProduct = ref({})
 const products = ref([])
+const prices = ref([])
+const currentPrices = ref([])
 const showProduct = ref(false)
 
 onMounted(async () => {
@@ -18,12 +20,30 @@ onMounted(async () => {
     } catch (error) {
         console.error('error fetching products', error)
     }
+
+    try{
+        const response = await fetch("http://localhost:8080/products/prices", {
+            method: 'GET'
+        })
+        const data = await response.json()
+        prices.value = data
+    }catch(error){
+        console.error(error)
+    }
 })
 
 const handleProductClick = (product) => {
     currentProduct.value = product
     console.log(currentProduct.value)
+    getPricesToRef(product.ProductID)
+    console.log(currentPrices.value)
     showProduct.value = true
+}
+const getPricesToRef = (id) => {
+    const pricesFound = prices.value.filter(item => item.product_id == id)
+    for(const price of pricesFound){
+        currentPrices.value.push(price)
+    }
 }
 
 </script>
@@ -36,7 +56,7 @@ const handleProductClick = (product) => {
             {{ product.Name }}
         </div>
     </div>
-    <Product :product="currentProduct" @back="(value) => showProduct = value" v-if="showProduct"/>
+    <Product :product="currentProduct" :prices="currentPrices" @back="(value) => showProduct = value" v-if="showProduct"/>
 </template>
 <style>
 #products-grid{

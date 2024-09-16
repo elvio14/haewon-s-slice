@@ -83,6 +83,9 @@ input:hover {
   border-radius: 0.5rem;
   cursor: pointer;
   font-weight: bold;
+  font-family: "Gochi Hand", cursive;
+  font-weight: 400;
+  font-style: normal;
 }
 
 .default-button:hover{
