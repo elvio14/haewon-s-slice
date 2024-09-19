@@ -5,7 +5,8 @@ import formatPrice from '../price.js';
 const props = defineProps(
     {
         product: Object,
-        prices: Array
+        prices: Array,
+        ids: Object
     }
 )
 
@@ -13,29 +14,61 @@ const priceContainer = ref(null)
 
 const emit = defineEmits(['back'])
 
-console.log(props.product)
-console.log(props.prices)
+const quantity = ref(1)
 
-const quanitity = ref(1)
+const status = ref('')
+
+const selectedPrice= ref()
+
+const notes = ref('')
 
 watch(()=> {
-    if (quanitity.value <= 1){
-        quanitity.value = 1
+    if (quantity.value <= 1){
+        quantity.value = 1
     }
-    if (quanitity.value >= 4){
-        quanitity.value = 4
+    if (quantity.value >= 4){
+        quantity.value = 4
     }
 })
 
 const selectPrice = (id) => {
-    console.log('price id =' + id)
+    status.value = ''
+    console.log('price id = ' + id)
     const active = priceContainer.value.querySelector('.selected')
     if (active != null){
         active.classList.remove("selected")
     }
-    console.log(document.getElementById(id).classList)
-    document.getElementById(id).classList.add("selected")
-    console.log(document.getElementById(id).classList)
+    document.getElementById('price-' + id).classList.add("selected")
+    selectedPrice.value = props.prices[id]
+}
+
+const addToCart = async () => {
+    if(selectedPrice.value == null){
+        status.value = "Please select a size."
+        return
+    }
+    status.value = "Adding to cart..."
+    try {
+        const response = await fetch('http://localhost:8080/carts', {
+            method: 'POST',
+            body: JSON.stringify({
+                "cart_id": props.ids.cart_id,
+                "product_id": props.product.ProductID,
+                "size": selectedPrice.value.Size,
+                "price": selectedPrice.value.Price,
+                "quantity": quantity.value,
+                "notes": notes.value
+            })
+        })
+        if(!response.ok){
+            throw new Error(response.json())
+        }else{
+            console.log("item added" + props.product.Name)
+            status.value = "Added to cart !"
+        }
+    } catch(error){
+        console.log(error)
+    }
 }
 </script>
 <template>
@@ -53,20 +86,21 @@ const selectPrice = (id) => {
             <div id="price-container" ref="priceContainer">
                 Sizes:
                 <div v-for="(price, index) in prices" :key="index" :id="'price-' + index" class="price default-button" v-if="prices != null">
-                    <span  @click="selectPrice('price-' + index)">{{ price.Size }}: {{ formatPrice(price.Price) }}</span>
+                    <span  @click="selectPrice(index)">{{ price.Size }}: {{ formatPrice(price.Price) }}</span>
                 </div>
             </div>
             <div style="border: solid 2px var(--main-mono);
              width: 2rem; display: inline-block; text-align: center; margin-left: 1rem; margin-right: 1rem;
              border-radius: 0.5rem;">
-                {{ quanitity }}
+                {{ quantity }}
             </div>
-            <button class="default-button qty-button" id="min-button" @click="quanitity--">−</button>
-             <button class="default-button qty-button" id="plus-button" @click="quanitity++">+</button><br>
+            <button class="default-button qty-button" id="min-button" @click="quantity--">-</button>
+             <button class="default-button qty-button" id="plus-button" @click="quantity++">+</button><br>
             
             <p>Notes:</p>
-            <textarea class="hand-font" placeholder="Request birthday notes, etc."  style="height: 6rem; width: 40vw ; padding: 1rem;"></textarea>
-            <button class="default-button" style="margin: 1rem; width: 6rem;">Add to Cart</button>
+            <textarea v-model="notes" class="hand-font" placeholder="Request birthday notes, etc."  style="height: 6rem; width: 40vw ; padding: 1rem;"></textarea>
+            <button class="default-button" style="margin: 1rem; width: 6rem;" @click="addToCart">Add to Cart</button>
+            <span>{{status}}</span>
         </div>
 
     </div>
